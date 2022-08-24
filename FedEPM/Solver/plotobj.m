@@ -12,5 +12,5 @@ function  plotobj(obj)
     yticklabels({'0.55','0.60','0.65','0.70'});   
     ly = ylabel('f(w)/m'); ly.Position(1) = ly.Position(1)+ 0.55;
     ax = gca; ax.YAxisLocation = 'right';
-    xlabel('CR'); ylabel('Objective');  
+    xlabel('CR'); 
 end
