@@ -224,22 +224,27 @@ end
 
 %--------------------------------------------------------------------------
 function  mxt   = avg(x,lam,eta,m)  
-
           w     = sort(x,'descend');
           tmp   = lam/eta;
-          mx    = mean(x)+tmp;
-          for t = 1: m-1 
-            mxt  = mx - 2*tmp*t/m;
-            if w(t) >= mxt &&  mxt>w(t+1)
-                break; end
+          mx    = mean(x)-tmp;
+          for t = 1: m 
+              mxt     = mx + 2*tmp*t/m;
+              if w(t) >  mxt &&  mxt>w(t+1) && t < m
+                  break; 
+              end
+          end
+          if t == m
+             fun     = @(v)sum(lam*abs(v-w)+(eta/2)*(v-w).^2);
+             [~,ind] = min(arrayfun(fun, w));
+             mxt     = w(ind(1));
           end
 end
 
 %--------------------------------------------------------------------------
-function   avx   = Avg(X,n,avg)  
-    avx = zeros(n,1);
-    for i=1:n
-        avx(i) = avg(X(i,:));  
-    end
+function  avx   = Avg(X,n,avg)  
+          avx   = zeros(n,1);
+          for i = 1:n
+              avx(i) = avg(X(i,:));  
+          end
  
 end
