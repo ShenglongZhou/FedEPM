@@ -229,7 +229,7 @@ function  mxt   = avg(x,lam,eta,m)
           mx    = mean(x)-tmp;
           for t = 1: m 
               mxt     = mx + 2*tmp*t/m;
-              if w(t) >  mxt &&  mxt>w(t+1) && t < m
+              if t < m && w(t) >  mxt &&  mxt>w(t+1) 
                   break; 
               end
           end
