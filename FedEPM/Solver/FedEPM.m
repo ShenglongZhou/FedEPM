@@ -88,7 +88,7 @@ for iter = 0 : maxit
         M       = sort(M(1:m0)); 
         s       = iter/k0+1; 
         obj(s)  = fx;
-        err(s)  = Fnorm(sum(gY,2));
+        err(s)  = Fnorm(mean(gY,2));
     end
      
     objx(iter+1) = fx;   
@@ -96,7 +96,7 @@ for iter = 0 : maxit
         fprintf(' Communication at iter = %4d      %9.4f      %6.3fsec\n',iter, fx, toc(t0));  
         stop1 = s > 3 && var(obj(s-3:s))<tol/(1+fx);
         stop2 = s > 3 && fx > max(obj(s-3:s-1)) && err(s) > max(err(s-3:s-1));
-        stop3 = err(s)<1e-6;
+        stop3 = err(s)<tol;
         if stop1 || stop2  || stop3
           % fprintf(' Communication at iter = %4d      %9.4f      %6.3fsec\n',iter, fx, toc(t0));  
            break;  
