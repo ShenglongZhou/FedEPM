@@ -131,26 +131,32 @@ out.time   = toc(t0);
 out.cr     = ceil(iter/k0);
 %out.ct     = (out.time-ct)/out.cr;
 fprintf(' -----------------------------------------------------------\n');
-
+fprintf(' Objective:     %10.3f\n',fx); 
+fprintf(' Iteration:     %10d\n',iter);
+fprintf(' Time:          %7.3fsec\n',out.time);
+fprintf(' CR:            %10d\n',out.cr);
+fprintf(' -----------------------------------------------------------\n');
 end
 
 %--------------------------------------------------------------------------
 function [m,tol,alpha,rho,maxit,noise] = set_parameters(di,n,k0,pars) 
     m       = length(di);
-    maxit   = 500*k0;
-    tol     = 1e-9*n;  
-    rho     = 0.5;
-    alpha   = 1.001;  
-    noise   = 0.2;
-    if isfield(pars,'noise');   noise   = pars.noise;   end
-    if isfield(pars,'tol');     tol     = pars.tol;     end
-    if isfield(pars,'alpha');   alpha   = pars.alpha;   end
-    if isfield(pars,'maxit');   maxit   = pars.maxit;   end
-    if isfield(pars,'rho');     rho     = pars.rho;     end
+    if isfield(pars,'noise'); noise = pars.noise; else; noise = 0.2;   end
+    if isfield(pars,'tol');   tol   = pars.tol;   else; tol   = 1e-9*n; end
+    if isfield(pars,'alpha'); alpha = pars.alpha; else; alpha = 1.001;  end
+    if isfield(pars,'maxit'); maxit = pars.maxit; else; maxit = 500*k0; end
+    if isfield(pars,'rho');   rho   = pars.rho;   else; rho   = 0.5;    end
 end
 
 %--------------------------------------------------------------------------
 function [fun,lam,eta,r0,fAvg] = def_funs(m,n,A,b,di,pars)
+
+
+    if isfield(pars,'rho'); rho = pars.rho; else; rho = 0.5;   end
+    if isfield(pars,'r0');  r0  = pars.r0;  else; r0  = 0.05;  end
+    if isfield(pars,'eta'); eta = pars.eta; else; eta = 2e-5*(rho+0.1)*(m/100+0.5); end
+    if isfield(pars,'lam'); lam = pars.lam; else; lam = eta/2;  end
+    
     I       = zeros(m+1,1);
     I(1)    = 0;
     for j   = 1 : m, I(j+1) = I(j)+di(j); end
@@ -161,15 +167,7 @@ function [fun,lam,eta,r0,fAvg] = def_funs(m,n,A,b,di,pars)
         Ai{j}  = A(indj,:);  
         bi{j}  = b(indj);
     end 
-
-    eta  = 2e-5*0.6*(m/100+0.5);
-    lam  = eta /2;
-    r0   = 0.05;
-    fun  = @(x)funcLogist(x,Ai,bi,m,n,1./di);
-    if isfield(pars,'r0');  r0  = pars.r0;  end
-    if isfield(pars,'lam'); lam = pars.lam; end
-    if isfield(pars,'eta'); eta = pars.eta; end
-    
+    fun      = @(x)funcLogist(x,Ai,bi,m,n,1./di);
     favg     = @(var)avg(var,lam,eta,m);  
     fAvg     = @(var)Avg(var,n,favg);
 
